@@ -17,7 +17,7 @@ export default function Home() {
 
   // filter states
   const [fuel, setFuel] = useState("");
-  const [year, setYear] = useState(202);
+  const [year, setYear] = useState(2022); // Set a valid default year
 
   // pagination states
   const [limit, setLimit] = useState(10);
@@ -32,23 +32,19 @@ export default function Home() {
         limit: limit || 10,
         model: model || '',
       });
-      setAllCars(result);
+      setAllCars(result); // Check the structure of the `result` you're receiving
     } catch (error) {
-      console.log(error);
+      console.log("Error fetching cars: ", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    console.log(fuel, year, limit, manufacturer, model);
-    
-    getCars();
+    getCars(); // Fetch cars on component mount and whenever filters change
   }, [fuel, year, limit, manufacturer, model]);
 
-  // console.log(allCars);
-
-  const isDataEmpty = !Array.isArray(allCars) || allCars.length < 1 || !allCars;
+  const isDataEmpty = !Array.isArray(allCars) || allCars.length < 1;
 
   return (
     <main className="overflow-hidden">
@@ -57,54 +53,40 @@ export default function Home() {
       <div className="mt-12 padding-x padding-y max-width" id="discover">
         <div className="home__text-container">
           <h1 className="text-4xl font-extrabold">Car Catalogue</h1>
-          <p>Explore the cars you might like </p>
+          <p>Explore the cars you might like</p>
         </div>
 
         <div className="home__filters">
-          <SearchBar setManufacturer={setManufacturer} 
-          setModel={setModel} />
+          <SearchBar setManufacturer={setManufacturer} setModel={setModel} />
 
           <div className="home__filter-container">
             <CustomFilter title="fuel" options={fuels} setFilter={setFuel} />
-            <CustomFilter
-              title="year"
-              options={yearsOfProduction}
-              setFilter={setYear}
-            />
+            <CustomFilter title="year" options={yearsOfProduction} setFilter={setYear} />
           </div>
         </div>
 
-        {allCars.length > 0 ? (
+        {loading ? (
+          <div className="mt-16 w-full flex-center">
+            <Image src="/loader.svg" alt="loader" width={50} height={50} className="object-contain" />
+          </div>
+        ) : allCars.length > 0 ? (
           <section>
             <div className="home__cars-wrapper">
-              {allCars?.map((car) => (
-                <CarCard car={car} />
+              {allCars?.map((car, index) => (
+                <CarCard key={index} car={car} />
               ))}
             </div>
 
-{loading && (
-  <div className="mt-16 w-full flex-center">
-    <Image
-    src= "/loader.svg"
-    alt="loader"
-    width={50}
-    height={50}
-    className="object-contain"
-    />
-  </div>
-)}
-
             <ShowMore
               pageNumber={limit / 10}
-              isNext={limit  > allCars.length}
+              isNext={limit > allCars.length}
               setLimit={setLimit}
             />
-            we have cars
           </section>
         ) : (
           <div className="home__error-container">
             <h2 className="text-black text-xl font-bold">Oops, no results</h2>
-            <p>{allCars?.message}</p>
+            <p>No cars found. Please adjust your filters.</p>
           </div>
         )}
       </div>
