@@ -9,6 +9,9 @@ import { updateSearchParams } from "@/utils";
 
 
 const CustomFilter = ({ title, options, setFilter }: CustomFilterProps) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilter(e.target.value);
+  };
 
   const [selected, setSelected] = useState(options[0]); // State for storing the selected option
 
